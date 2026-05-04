@@ -1,0 +1,2470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DiscipleTrack — Hare Krishna B.Tech Life Manager</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Nunito:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* ===== CSS VARIABLES ===== */
+  :root {
+    --saffron: #FF6B1A;
+    --saffron-deep: #e65100;
+    --saffron-light: #FF9F5A;
+    --gold: #FFD700;
+    --gold-dark: #FFA000;
+    --navy: #0A0A1A;
+    --navy-mid: #12122A;
+    --navy-card: #1A1A35;
+    --navy-card2: #22224A;
+    --lotus: #FF7EB3;
+    --turquoise: #00BCD4;
+    --green-ok: #4CAF50;
+    --red-warn: #F44336;
+    --yellow-warn: #FFC107;
+    --text: #F0ECD8;
+    --text-muted: #9E9BB5;
+    --text-accent: #FFD700;
+    --border: rgba(255,107,26,0.2);
+    --shadow: 0 4px 30px rgba(255,107,26,0.15);
+    --radius: 16px;
+    --radius-sm: 8px;
+    --font-head: 'Cinzel', serif;
+    --font-body: 'Nunito', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+  }
+
+  /* ===== RESET & BASE ===== */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: var(--font-body);
+    background: var(--navy);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ===== BACKGROUND ===== */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 20%, rgba(255,107,26,0.08) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 80%, rgba(0,188,212,0.05) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 50%, rgba(255,215,0,0.03) 0%, transparent 70%);
+    pointer-events: none; z-index: 0;
+  }
+
+  /* ===== STAR PARTICLES ===== */
+  .stars { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+  .star {
+    position: absolute; background: rgba(255,215,0,0.6); border-radius: 50%;
+    animation: twinkle var(--dur, 3s) ease-in-out infinite alternate;
+  }
+  @keyframes twinkle { 0%{opacity:.1;transform:scale(1);} 100%{opacity:.8;transform:scale(1.5);} }
+
+  /* ===== PAGES ===== */
+  .page { display: none; position: relative; z-index: 1; }
+  .page.active { display: block; animation: fadeIn .35s ease; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(10px);} to{opacity:1;transform:translateY(0);} }
+
+  /* ===== LOGIN PAGE ===== */
+  #loginPage {
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px;
+  }
+  .login-box {
+    background: var(--navy-card);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 48px 40px;
+    width: 100%; max-width: 440px;
+    box-shadow: var(--shadow), 0 0 60px rgba(255,107,26,0.08);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .login-box::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, var(--saffron), var(--gold), var(--saffron));
+  }
+  .om-symbol {
+    font-size: 52px; margin-bottom: 8px;
+    animation: glow 2s ease-in-out infinite alternate;
+  }
+  @keyframes glow {
+    from { text-shadow: 0 0 10px rgba(255,215,0,0.3); }
+    to { text-shadow: 0 0 30px rgba(255,215,0,0.8), 0 0 60px rgba(255,107,26,0.4); }
+  }
+  .login-title { font-family: var(--font-head); font-size: 1.8rem; color: var(--gold); margin-bottom: 4px; }
+  .login-subtitle { color: var(--text-muted); font-size: .9rem; margin-bottom: 28px; }
+  .tab-switcher {
+    display: flex; background: var(--navy); border-radius: var(--radius-sm);
+    padding: 4px; margin-bottom: 24px;
+  }
+  .tab-btn {
+    flex: 1; padding: 10px; border: none; background: transparent;
+    color: var(--text-muted); border-radius: 6px; cursor: pointer;
+    font-family: var(--font-body); font-weight: 600; font-size: .9rem;
+    transition: all .25s;
+  }
+  .tab-btn.active { background: var(--saffron); color: white; }
+
+  /* ===== FORM ELEMENTS ===== */
+  .form-group { margin-bottom: 16px; text-align: left; }
+  .form-label { display: block; font-size: .82rem; color: var(--text-muted); margin-bottom: 6px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; }
+  .form-input, .form-select, .form-textarea {
+    width: 100%; padding: 12px 16px;
+    background: var(--navy); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); color: var(--text);
+    font-family: var(--font-body); font-size: .95rem;
+    transition: border .2s, box-shadow .2s;
+    outline: none;
+  }
+  .form-input:focus, .form-select:focus, .form-textarea:focus {
+    border-color: var(--saffron); box-shadow: 0 0 0 3px rgba(255,107,26,0.15);
+  }
+  .form-select option { background: var(--navy-card); }
+  .form-textarea { resize: vertical; min-height: 80px; }
+
+  /* ===== BUTTONS ===== */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 12px 24px; border: none; border-radius: var(--radius-sm);
+    font-family: var(--font-body); font-weight: 700; font-size: .95rem;
+    cursor: pointer; transition: all .25s; text-decoration: none;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--saffron), var(--saffron-deep));
+    color: white; width: 100%;
+    box-shadow: 0 4px 15px rgba(255,107,26,0.4);
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(255,107,26,0.5); }
+  .btn-gold { background: linear-gradient(135deg, var(--gold), var(--gold-dark)); color: #1a1a00; }
+  .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--text); }
+  .btn-ghost:hover { border-color: var(--saffron); color: var(--saffron); }
+  .btn-sm { padding: 8px 16px; font-size: .85rem; }
+  .btn-danger { background: var(--red-warn); color: white; }
+  .btn-success { background: var(--green-ok); color: white; }
+
+  /* ===== MAIN APP LAYOUT ===== */
+  #appPage { min-height: 100vh; display: flex; }
+
+  /* ===== SIDEBAR ===== */
+  .sidebar {
+    width: 260px; min-height: 100vh;
+    background: var(--navy-card);
+    border-right: 1px solid var(--border);
+    display: flex; flex-direction: column;
+    position: fixed; top: 0; left: 0; z-index: 100;
+    transition: transform .3s;
+  }
+  .sidebar-logo {
+    padding: 24px 20px;
+    border-bottom: 1px solid var(--border);
+    text-align: center;
+  }
+  .sidebar-logo .logo-om { font-size: 32px; }
+  .sidebar-logo .logo-title {
+    font-family: var(--font-head); font-size: 1rem;
+    color: var(--gold); display: block; margin-top: 4px; letter-spacing: .05em;
+  }
+  .sidebar-logo .logo-sub {
+    font-size: .72rem; color: var(--text-muted); margin-top: 2px;
+    display: block;
+  }
+  .sidebar-user {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 12px;
+  }
+  .user-avatar {
+    width: 38px; height: 38px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--saffron), var(--gold));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem; font-weight: 700; color: white;
+    font-family: var(--font-head);
+  }
+  .user-name { font-weight: 700; font-size: .9rem; }
+  .user-role { font-size: .75rem; color: var(--text-muted); }
+  .sidebar-nav { flex: 1; padding: 12px 0; overflow-y: auto; }
+  .nav-section-label {
+    font-size: .7rem; color: var(--text-muted); letter-spacing: .1em;
+    text-transform: uppercase; padding: 8px 20px 4px; font-weight: 700;
+  }
+  .nav-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 11px 20px; cursor: pointer;
+    color: var(--text-muted); font-weight: 600; font-size: .9rem;
+    border-left: 3px solid transparent;
+    transition: all .2s;
+  }
+  .nav-item:hover { background: rgba(255,107,26,0.08); color: var(--text); }
+  .nav-item.active {
+    background: rgba(255,107,26,0.12); color: var(--saffron-light);
+    border-left-color: var(--saffron);
+  }
+  .nav-icon { font-size: 1.1rem; width: 22px; text-align: center; }
+  .sidebar-footer {
+    padding: 16px 20px;
+    border-top: 1px solid var(--border);
+  }
+  .logout-btn {
+    width: 100%; padding: 10px; background: transparent;
+    border: 1px solid rgba(244,67,54,0.3); border-radius: var(--radius-sm);
+    color: var(--red-warn); cursor: pointer; font-family: var(--font-body);
+    font-weight: 600; font-size: .85rem; transition: all .2s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .logout-btn:hover { background: rgba(244,67,54,0.1); }
+
+  /* ===== MAIN CONTENT ===== */
+  .main-content {
+    margin-left: 260px; flex: 1; min-height: 100vh;
+    display: flex; flex-direction: column;
+  }
+  .topbar {
+    height: 64px; background: var(--navy-card);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 28px;
+    position: sticky; top: 0; z-index: 50;
+  }
+  .topbar-left { display: flex; align-items: center; gap: 16px; }
+  .page-title { font-family: var(--font-head); font-size: 1.3rem; color: var(--gold); }
+  .topbar-right { display: flex; align-items: center; gap: 12px; }
+  .live-clock {
+    font-family: var(--font-mono); font-size: 1rem;
+    color: var(--saffron-light);
+    background: var(--navy); padding: 6px 14px;
+    border-radius: var(--radius-sm); border: 1px solid var(--border);
+  }
+  .date-badge {
+    font-size: .8rem; color: var(--text-muted);
+    background: var(--navy); padding: 6px 12px;
+    border-radius: var(--radius-sm); border: 1px solid var(--border);
+  }
+  .menu-toggle {
+    display: none; background: none; border: none;
+    color: var(--text); cursor: pointer; font-size: 1.4rem;
+  }
+  .content-area { flex: 1; padding: 28px; }
+
+  /* ===== CARDS ===== */
+  .card {
+    background: var(--navy-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.3);
+  }
+  .card-title {
+    font-family: var(--font-head); font-size: 1rem;
+    color: var(--gold); margin-bottom: 16px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .section-title {
+    font-family: var(--font-head); font-size: 1.3rem;
+    color: var(--gold); margin-bottom: 20px;
+    display: flex; align-items: center; gap: 10px;
+  }
+
+  /* ===== GRID LAYOUTS ===== */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .grid-auto { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+
+  /* ===== STAT CARDS ===== */
+  .stat-card {
+    background: var(--navy-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    position: relative; overflow: hidden;
+    transition: transform .2s, box-shadow .2s;
+  }
+  .stat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+  .stat-card::after {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: var(--accent-color, var(--saffron));
+  }
+  .stat-icon { font-size: 1.8rem; margin-bottom: 8px; }
+  .stat-value { font-size: 2rem; font-weight: 700; color: var(--text); font-family: var(--font-head); }
+  .stat-label { font-size: .8rem; color: var(--text-muted); margin-top: 4px; }
+
+  /* ===== PROGRESS BAR ===== */
+  .progress-bar {
+    height: 8px; background: var(--navy); border-radius: 4px; overflow: hidden; margin-top: 8px;
+  }
+  .progress-fill {
+    height: 100%; border-radius: 4px;
+    background: linear-gradient(90deg, var(--saffron), var(--gold));
+    transition: width .6s ease;
+  }
+
+  /* ===== HABIT TRACKER ===== */
+  .habit-item {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 16px;
+    background: var(--navy);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    margin-bottom: 10px;
+    transition: all .2s;
+  }
+  .habit-item.completed { border-color: rgba(76,175,80,0.4); background: rgba(76,175,80,0.05); }
+  .habit-check {
+    width: 24px; height: 24px; border-radius: 50%;
+    border: 2px solid var(--border); background: transparent;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: all .2s; flex-shrink: 0; font-size: .9rem;
+  }
+  .habit-item.completed .habit-check { border-color: var(--green-ok); background: var(--green-ok); }
+  .habit-name { flex: 1; font-weight: 600; }
+  .habit-category { font-size: .75rem; padding: 3px 8px; border-radius: 12px; }
+  .cat-spiritual { background: rgba(255,215,0,0.15); color: var(--gold); }
+  .cat-study { background: rgba(0,188,212,0.15); color: var(--turquoise); }
+  .cat-health { background: rgba(76,175,80,0.15); color: var(--green-ok); }
+  .cat-discipline { background: rgba(255,107,26,0.15); color: var(--saffron-light); }
+
+  /* ===== STUDY SUBJECTS ===== */
+  .subject-card {
+    background: var(--navy);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 16px;
+    transition: all .2s;
+    cursor: pointer;
+  }
+  .subject-card:hover { border-color: var(--saffron); }
+  .subject-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .subject-name { font-weight: 700; font-size: 1rem; }
+  .subject-code { font-size: .75rem; color: var(--text-muted); font-family: var(--font-mono); }
+  .subject-pct { font-size: 1.1rem; font-weight: 700; color: var(--gold); }
+  .chapter-list { margin-top: 14px; display: none; }
+  .chapter-list.open { display: block; }
+  .chapter-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05);
+    font-size: .88rem;
+  }
+  .chapter-item:last-child { border-bottom: none; }
+  .chapter-status {
+    width: 18px; height: 18px; border-radius: 50%;
+    border: 2px solid var(--border); cursor: pointer;
+    flex-shrink: 0; transition: all .2s;
+    display: flex; align-items: center; justify-content: center; font-size: .7rem;
+  }
+  .chapter-status.done { background: var(--green-ok); border-color: var(--green-ok); }
+  .chapter-status.partial { background: var(--yellow-warn); border-color: var(--yellow-warn); }
+
+  /* ===== SCHEDULE / ROUTINE ===== */
+  .time-slot {
+    display: flex; gap: 14px; padding: 12px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    align-items: flex-start;
+  }
+  .time-label {
+    font-family: var(--font-mono); font-size: .8rem;
+    color: var(--saffron-light); min-width: 80px; padding-top: 2px;
+  }
+  .slot-content {
+    flex: 1; background: var(--navy-card2);
+    border-radius: var(--radius-sm); padding: 12px 16px;
+    border-left: 3px solid var(--accent-col, var(--saffron));
+  }
+  .slot-name { font-weight: 600; font-size: .92rem; }
+  .slot-desc { font-size: .8rem; color: var(--text-muted); margin-top: 3px; }
+
+  /* ===== CALENDAR ===== */
+  .cal-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .cal-nav-btn {
+    background: var(--navy); border: 1px solid var(--border);
+    color: var(--text); border-radius: var(--radius-sm); padding: 8px 14px;
+    cursor: pointer; font-size: 1.1rem; transition: all .2s;
+  }
+  .cal-nav-btn:hover { border-color: var(--saffron); color: var(--saffron); }
+  .cal-month-year { font-family: var(--font-head); font-size: 1.1rem; color: var(--gold); }
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+  .cal-day-header {
+    text-align: center; font-size: .75rem;
+    color: var(--text-muted); padding: 6px 0;
+    font-weight: 700; letter-spacing: .05em;
+  }
+  .cal-day {
+    aspect-ratio: 1; display: flex; flex-direction: column;
+    align-items: center; justify-content: flex-start;
+    padding: 6px 4px; border-radius: 8px;
+    cursor: pointer; transition: all .2s; position: relative;
+    font-size: .85rem;
+  }
+  .cal-day:hover { background: var(--navy-card2); }
+  .cal-day.other-month { opacity: .3; }
+  .cal-day.today { background: rgba(255,107,26,0.2); border: 1px solid var(--saffron); }
+  .cal-day.selected { background: var(--saffron); color: white; }
+  .cal-day.has-event::after {
+    content: ''; position: absolute; bottom: 4px;
+    width: 5px; height: 5px; border-radius: 50%; background: var(--gold);
+  }
+  .cal-day-num { font-weight: 600; }
+  .event-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px; background: var(--navy-card2);
+    border-radius: var(--radius-sm); margin-bottom: 8px;
+    border-left: 3px solid var(--event-color, var(--saffron));
+  }
+  .event-time { font-family: var(--font-mono); font-size: .78rem; color: var(--text-muted); }
+  .event-title { font-weight: 600; font-size: .88rem; }
+
+  /* ===== TIMER / POMODORO ===== */
+  .timer-display {
+    font-family: var(--font-head); font-size: 5rem;
+    color: var(--gold); text-align: center; letter-spacing: .05em;
+    text-shadow: 0 0 30px rgba(255,215,0,0.3);
+  }
+  .timer-ring {
+    position: relative; width: 200px; height: 200px;
+    margin: 0 auto 20px;
+  }
+  .timer-ring svg { transform: rotate(-90deg); }
+  .timer-ring circle { fill: none; stroke-width: 8; }
+  .timer-ring .bg { stroke: var(--navy-card2); }
+  .timer-ring .progress-ring { stroke: var(--saffron); stroke-linecap: round; transition: stroke-dashoffset .5s; }
+  .timer-label-inside {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+  }
+  .timer-time-text { font-family: var(--font-head); font-size: 2.2rem; color: var(--gold); }
+  .timer-phase { font-size: .8rem; color: var(--text-muted); margin-top: 4px; }
+  .timer-controls { display: flex; gap: 12px; justify-content: center; margin-top: 16px; }
+  .timer-btn {
+    width: 52px; height: 52px; border-radius: 50%;
+    border: 2px solid var(--saffron); background: transparent;
+    color: var(--saffron); font-size: 1.3rem; cursor: pointer;
+    transition: all .2s; display: flex; align-items: center; justify-content: center;
+  }
+  .timer-btn:hover { background: var(--saffron); color: white; }
+  .timer-btn.active { background: var(--saffron); color: white; }
+  .pomodoro-count { display: flex; gap: 6px; justify-content: center; margin-top: 16px; }
+  .pom-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--navy-card2); border: 2px solid var(--saffron); }
+  .pom-dot.done { background: var(--saffron); }
+
+  /* ===== NOTES ===== */
+  .note-card {
+    background: var(--navy-card2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 16px; margin-bottom: 12px;
+    border-left: 3px solid var(--note-color, var(--saffron));
+    position: relative;
+  }
+  .note-title { font-weight: 700; margin-bottom: 6px; font-size: .92rem; }
+  .note-body { font-size: .85rem; color: var(--text-muted); line-height: 1.6; }
+  .note-date { font-size: .72rem; color: var(--text-muted); margin-top: 8px; font-family: var(--font-mono); }
+  .note-del {
+    position: absolute; top: 12px; right: 12px;
+    background: none; border: none; color: var(--red-warn);
+    cursor: pointer; font-size: .8rem; opacity: 0; transition: opacity .2s;
+  }
+  .note-card:hover .note-del { opacity: 1; }
+
+  /* ===== ACTIVITY LOG ===== */
+  .log-item {
+    display: flex; gap: 12px; padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    align-items: flex-start;
+  }
+  .log-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--saffron); flex-shrink: 0; margin-top: 6px; }
+  .log-time { font-family: var(--font-mono); font-size: .78rem; color: var(--text-muted); }
+  .log-text { font-size: .88rem; }
+
+  /* ===== MODAL ===== */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.7); z-index: 200;
+    align-items: center; justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--navy-card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 32px; width: 100%; max-width: 480px;
+    max-height: 80vh; overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    animation: slideUp .3s ease;
+  }
+  @keyframes slideUp { from{opacity:0;transform:translateY(20px);} to{opacity:1;transform:translateY(0);} }
+  .modal-title { font-family: var(--font-head); font-size: 1.2rem; color: var(--gold); margin-bottom: 20px; }
+  .modal-actions { display: flex; gap: 10px; margin-top: 20px; justify-content: flex-end; }
+
+  /* ===== TOAST ===== */
+  .toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 300; display: flex; flex-direction: column; gap: 8px; }
+  .toast {
+    background: var(--navy-card2); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); padding: 12px 18px;
+    display: flex; align-items: center; gap: 10px;
+    font-size: .88rem; font-weight: 600;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    animation: slideIn .3s ease; min-width: 250px;
+  }
+  @keyframes slideIn { from{opacity:0;transform:translateX(30px);} to{opacity:1;transform:translateX(0);} }
+  .toast.success { border-color: rgba(76,175,80,0.4); }
+  .toast.error { border-color: rgba(244,67,54,0.4); }
+  .toast.info { border-color: rgba(0,188,212,0.4); }
+
+  /* ===== LEADERBOARD STREAK ===== */
+  .streak-flame { font-size: 2rem; animation: bounce 1s ease infinite alternate; }
+  @keyframes bounce { from{transform:translateY(0);} to{transform:translateY(-4px);} }
+
+  /* ===== EXPORT BUTTONS ===== */
+  .export-bar { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 900px) {
+    .sidebar { transform: translateX(-100%); }
+    .sidebar.open { transform: translateX(0); }
+    .main-content { margin-left: 0; }
+    .menu-toggle { display: block; }
+    .grid-3, .grid-4 { grid-template-columns: repeat(2, 1fr); }
+    .grid-2 { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 600px) {
+    .grid-3, .grid-4 { grid-template-columns: 1fr; }
+    .content-area { padding: 16px; }
+    .timer-display { font-size: 3rem; }
+  }
+
+  /* ===== QUOTES BAR ===== */
+  .quote-bar {
+    background: linear-gradient(90deg, rgba(255,107,26,0.1), rgba(255,215,0,0.1));
+    border: 1px solid rgba(255,215,0,0.15);
+    border-radius: var(--radius-sm); padding: 12px 20px;
+    margin-bottom: 24px; text-align: center;
+    font-style: italic; color: var(--text-muted); font-size: .88rem;
+  }
+  .quote-bar strong { color: var(--gold); font-style: normal; }
+
+  /* ===== BADGE ===== */
+  .badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 20px; font-size: .75rem; font-weight: 700; }
+  .badge-saffron { background: rgba(255,107,26,0.2); color: var(--saffron-light); }
+  .badge-gold { background: rgba(255,215,0,0.15); color: var(--gold); }
+  .badge-blue { background: rgba(0,188,212,0.15); color: var(--turquoise); }
+  .badge-green { background: rgba(76,175,80,0.15); color: var(--green-ok); }
+
+  /* misc helpers */
+  .mt-12 { margin-top: 12px; } .mt-16 { margin-top: 16px; } .mt-20 { margin-top: 20px; }
+  .mb-12 { margin-bottom: 12px; } .mb-16 { margin-bottom: 16px; }
+  .flex { display: flex; } .items-center { align-items: center; }
+  .justify-between { justify-content: space-between; }
+  .gap-8 { gap: 8px; } .gap-12 { gap: 12px; }
+  .text-muted { color: var(--text-muted); }
+  .text-gold { color: var(--gold); }
+  .text-saffron { color: var(--saffron-light); }
+  .fw-700 { font-weight: 700; }
+  .divider { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+  .overlay-close { position: fixed; inset: 0; z-index: 99; display: none; }
+  .overlay-close.open { display: block; }
+</style>
+</head>
+<body>
+
+<!-- Star background -->
+<div class="stars" id="starsContainer"></div>
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- ==================== LOGIN PAGE ==================== -->
+<div id="loginPage" class="page active">
+  <div class="login-box">
+    <div class="om-symbol">🕉️</div>
+    <div class="login-title">DiscipleTrack</div>
+    <div class="login-subtitle">Hare Krishna • Discipline • Excellence</div>
+
+    <div class="tab-switcher">
+      <button class="tab-btn active" id="loginTabBtn" onclick="switchAuthTab('login')">Login</button>
+      <button class="tab-btn" id="registerTabBtn" onclick="switchAuthTab('register')">Register</button>
+    </div>
+
+    <!-- LOGIN FORM -->
+    <div id="loginForm">
+      <div class="form-group">
+        <label class="form-label">Username</label>
+        <input type="text" class="form-input" id="loginUsername" placeholder="Your name" onkeydown="if(event.key==='Enter')doLogin()">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input type="password" class="form-input" id="loginPassword" placeholder="Your password" onkeydown="if(event.key==='Enter')doLogin()">
+      </div>
+      <button class="btn btn-primary mt-16" onclick="doLogin()">🙏 Enter the Temple</button>
+      <p class="text-muted mt-12" style="font-size:.8rem;text-align:center;">Demo: admin / 12345</p>
+    </div>
+
+    <!-- REGISTER FORM -->
+    <div id="registerForm" style="display:none;">
+      <div class="form-group">
+        <label class="form-label">Full Name</label>
+        <input type="text" class="form-input" id="regName" placeholder="Hari Das / Your Name">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Username</label>
+        <input type="text" class="form-input" id="regUsername" placeholder="username">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input type="password" class="form-input" id="regPassword" placeholder="Create password">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Semester</label>
+        <select class="form-select" id="regSemester">
+          <option value="B.Tech 1st Year, 2nd Semester">B.Tech 1st Year, 2nd Semester</option>
+          <option value="B.Tech 2nd Year">B.Tech 2nd Year</option>
+          <option value="B.Tech 3rd Year">B.Tech 3rd Year</option>
+          <option value="B.Tech 4th Year">B.Tech 4th Year</option>
+        </select>
+      </div>
+      <button class="btn btn-primary mt-16" onclick="doRegister()">🌸 Begin My Journey</button>
+    </div>
+
+    <p style="margin-top:20px;font-size:.78rem;color:var(--text-muted);font-style:italic;">
+      "The mind is restless, turbulent, strong and unyielding, O Krishna,<br>but I think it is more difficult to control than the wind." — BG 6.34
+    </p>
+  </div>
+</div>
+
+<!-- ==================== MAIN APP ==================== -->
+<div id="appPage" class="page">
+
+  <!-- Sidebar overlay for mobile -->
+  <div class="overlay-close" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-om">🪷</div>
+      <span class="logo-title">DiscipleTrack</span>
+      <span class="logo-sub">Hare Krishna • B.Tech Life</span>
+    </div>
+    <div class="sidebar-user">
+      <div class="user-avatar" id="userAvatarSidebar">H</div>
+      <div>
+        <div class="user-name" id="userNameSidebar">Student</div>
+        <div class="user-role" id="userRoleSidebar">B.Tech 1st Year</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Overview</div>
+      <div class="nav-item active" onclick="showSection('dashboard')">
+        <span class="nav-icon">📊</span> Dashboard
+      </div>
+
+      <div class="nav-section-label">Spiritual Life</div>
+      <div class="nav-item" onclick="showSection('habits')">
+        <span class="nav-icon">🕉️</span> Daily Sadhana
+      </div>
+      <div class="nav-item" onclick="showSection('routine')">
+        <span class="nav-icon">🌅</span> Daily Routine
+      </div>
+
+      <div class="nav-section-label">Academics</div>
+      <div class="nav-item" onclick="showSection('subjects')">
+        <span class="nav-icon">📚</span> Subjects
+      </div>
+      <div class="nav-item" onclick="showSection('calendar')">
+        <span class="nav-icon">📅</span> Calendar
+      </div>
+      <div class="nav-item" onclick="showSection('timer')">
+        <span class="nav-icon">⏱️</span> Pomodoro Timer
+      </div>
+
+      <div class="nav-section-label">Records</div>
+      <div class="nav-item" onclick="showSection('notes')">
+        <span class="nav-icon">📝</span> Notes
+      </div>
+      <div class="nav-item" onclick="showSection('activity')">
+        <span class="nav-icon">📋</span> Activity Log
+      </div>
+      <div class="nav-item" onclick="showSection('reports')">
+        <span class="nav-icon">📈</span> Reports
+      </div>
+      <div class="nav-item" onclick="showSection('settings')">
+        <span class="nav-icon">⚙️</span> Settings
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="logout-btn" onclick="doLogout()">🚪 Logout</button>
+    </div>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <div class="main-content">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+        <div class="page-title" id="currentPageTitle">Dashboard</div>
+      </div>
+      <div class="topbar-right">
+        <div class="date-badge" id="dateBadge"></div>
+        <div class="live-clock" id="liveClock">00:00:00</div>
+      </div>
+    </header>
+
+    <div class="content-area">
+
+      <!-- ===== DASHBOARD ===== -->
+      <section id="sec-dashboard">
+        <div class="quote-bar" id="quoteBar"></div>
+
+        <!-- Stats Row -->
+        <div class="grid-4 mb-16" id="statsRow">
+          <div class="stat-card" style="--accent-color:var(--gold)">
+            <div class="stat-icon">🔥</div>
+            <div class="stat-value" id="statStreak">0</div>
+            <div class="stat-label">Day Streak</div>
+          </div>
+          <div class="stat-card" style="--accent-color:var(--saffron)">
+            <div class="stat-icon">✅</div>
+            <div class="stat-value" id="statHabits">0%</div>
+            <div class="stat-label">Today's Sadhana</div>
+          </div>
+          <div class="stat-card" style="--accent-color:var(--turquoise)">
+            <div class="stat-icon">📖</div>
+            <div class="stat-value" id="statStudy">0h</div>
+            <div class="stat-label">Study Time Today</div>
+          </div>
+          <div class="stat-card" style="--accent-color:var(--lotus)">
+            <div class="stat-icon">🍀</div>
+            <div class="stat-value" id="statExams">0</div>
+            <div class="stat-label">Days to Exam</div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <!-- Today's Habits Quick View -->
+          <div class="card">
+            <div class="card-title">🕉️ Today's Sadhana</div>
+            <div id="dashHabits"></div>
+            <button class="btn btn-ghost btn-sm mt-12" onclick="showSection('habits')">View All →</button>
+          </div>
+
+          <!-- Subjects Progress -->
+          <div class="card">
+            <div class="card-title">📚 Subject Progress</div>
+            <div id="dashSubjects"></div>
+            <button class="btn btn-ghost btn-sm mt-12" onclick="showSection('subjects')">Full View →</button>
+          </div>
+        </div>
+
+        <div class="grid-2 mt-20">
+          <!-- Today's Schedule Preview -->
+          <div class="card">
+            <div class="card-title">📅 Today's Schedule</div>
+            <div id="dashSchedule"></div>
+            <button class="btn btn-ghost btn-sm mt-12" onclick="showSection('routine')">Full Routine →</button>
+          </div>
+
+          <!-- Recent Activity -->
+          <div class="card">
+            <div class="card-title">📋 Recent Activity</div>
+            <div id="dashActivity" style="max-height:250px;overflow-y:auto;"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== DAILY SADHANA (Habits) ===== -->
+      <section id="sec-habits" style="display:none;">
+        <div class="section-title">🕉️ Daily Sadhana & Habits</div>
+
+        <div class="export-bar">
+          <button class="btn btn-gold btn-sm" onclick="exportHabitsCSV()">📥 Export CSV</button>
+          <button class="btn btn-ghost btn-sm" onclick="openAddHabitModal()">+ Add Habit</button>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title">🙏 Spiritual Practices</div>
+            <div id="habitListSpiritual"></div>
+          </div>
+          <div class="card">
+            <div class="card-title">📚 Academic Habits</div>
+            <div id="habitListStudy"></div>
+          </div>
+          <div class="card">
+            <div class="card-title">💪 Health & Lifestyle</div>
+            <div id="habitListHealth"></div>
+          </div>
+          <div class="card">
+            <div class="card-title">⚡ Discipline</div>
+            <div id="habitListDiscipline"></div>
+          </div>
+        </div>
+
+        <!-- Habit History Heatmap -->
+        <div class="card mt-20">
+          <div class="card-title">📊 30-Day Completion History</div>
+          <div id="habitHeatmap" style="display:flex;flex-wrap:wrap;gap:4px;margin-top:12px;"></div>
+        </div>
+      </section>
+
+      <!-- ===== DAILY ROUTINE ===== -->
+      <section id="sec-routine" style="display:none;">
+        <div class="section-title">🌅 Daily Routine</div>
+
+        <div class="export-bar">
+          <button class="btn btn-gold btn-sm" onclick="exportRoutineCSV()">📥 Export CSV</button>
+          <button class="btn btn-ghost btn-sm" onclick="openAddSlotModal()">+ Add Time Slot</button>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title">🌄 Morning (4am – 12pm)</div>
+            <div id="routineMorning"></div>
+          </div>
+          <div class="card">
+            <div class="card-title">☀️ Afternoon (12pm – 5pm)</div>
+            <div id="routineAfternoon"></div>
+          </div>
+          <div class="card">
+            <div class="card-title">🌆 Evening (5pm – 9pm)</div>
+            <div id="routineEvening"></div>
+          </div>
+          <div class="card">
+            <div class="card-title">🌙 Night (9pm – 12am)</div>
+            <div id="routineNight"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== SUBJECTS ===== -->
+      <section id="sec-subjects" style="display:none;">
+        <div class="section-title">📚 B.Tech Subjects</div>
+
+        <div class="export-bar">
+          <button class="btn btn-gold btn-sm" onclick="exportSubjectsCSV()">📥 Export CSV</button>
+          <button class="btn btn-ghost btn-sm" onclick="openAddTopicModal()">+ Add Topic</button>
+        </div>
+
+        <div id="subjectList"></div>
+      </section>
+
+      <!-- ===== CALENDAR ===== -->
+      <section id="sec-calendar" style="display:none;">
+        <div class="section-title">📅 Calendar & Events</div>
+        <div class="grid-2">
+          <div class="card">
+            <div class="cal-header">
+              <button class="cal-nav-btn" onclick="changeMonth(-1)">◀</button>
+              <div class="cal-month-year" id="calMonthYear"></div>
+              <button class="cal-nav-btn" onclick="changeMonth(1)">▶</button>
+            </div>
+            <div class="cal-grid">
+              <div class="cal-day-header">SUN</div>
+              <div class="cal-day-header">MON</div>
+              <div class="cal-day-header">TUE</div>
+              <div class="cal-day-header">WED</div>
+              <div class="cal-day-header">THU</div>
+              <div class="cal-day-header">FRI</div>
+              <div class="cal-day-header">SAT</div>
+            </div>
+            <div class="cal-grid" id="calDays"></div>
+          </div>
+          <div class="card">
+            <div class="card-title" id="calEventTitle">📌 Events</div>
+            <button class="btn btn-ghost btn-sm mb-12" onclick="openAddEventModal()">+ Add Event</button>
+            <div id="calEventList"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== POMODORO TIMER ===== -->
+      <section id="sec-timer" style="display:none;">
+        <div class="section-title">⏱️ Pomodoro Study Timer</div>
+        <div class="grid-2">
+          <div class="card" style="text-align:center;">
+            <div class="timer-ring">
+              <svg width="200" height="200" viewBox="0 0 200 200">
+                <circle class="bg" cx="100" cy="100" r="88" />
+                <circle class="progress-ring" id="timerRing" cx="100" cy="100" r="88"
+                  stroke-dasharray="552.92" stroke-dashoffset="0" />
+              </svg>
+              <div class="timer-label-inside">
+                <div class="timer-time-text" id="timerText">25:00</div>
+                <div class="timer-phase" id="timerPhase">FOCUS</div>
+              </div>
+            </div>
+            <div class="pomodoro-count" id="pomCount"></div>
+            <div class="timer-controls">
+              <button class="timer-btn" onclick="timerSkip()" title="Skip">⏭</button>
+              <button class="timer-btn" id="timerStartBtn" onclick="timerToggle()" title="Start/Pause">▶</button>
+              <button class="timer-btn" onclick="timerReset()" title="Reset">↺</button>
+            </div>
+            <div style="margin-top:20px;">
+              <label class="form-label" style="text-align:center;">Current Subject</label>
+              <select class="form-select" id="timerSubject" style="margin-top:6px;">
+                <option>Statistical Methods</option>
+                <option>Linear Algebra</option>
+                <option>DSA</option>
+                <option>EC (Electronics)</option>
+                <option>Economy</option>
+                <option>Business Communication</option>
+                <option>Other Activity</option>
+              </select>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">⚙️ Timer Settings</div>
+            <div class="form-group">
+              <label class="form-label">Focus Duration (min)</label>
+              <input type="number" class="form-input" id="focusDuration" value="25" min="1" max="90" onchange="applyTimerSettings()">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Short Break (min)</label>
+              <input type="number" class="form-input" id="shortBreak" value="5" min="1" max="30" onchange="applyTimerSettings()">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Long Break (min)</label>
+              <input type="number" class="form-input" id="longBreak" value="15" min="1" max="60" onchange="applyTimerSettings()">
+            </div>
+            <hr class="divider">
+            <div class="card-title">📊 Today's Sessions</div>
+            <div id="timerLog" style="max-height:200px;overflow-y:auto;"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== NOTES ===== -->
+      <section id="sec-notes" style="display:none;">
+        <div class="section-title">📝 Notes & Reminders</div>
+        <div class="export-bar">
+          <button class="btn btn-ghost btn-sm" onclick="openAddNoteModal()">+ New Note</button>
+          <button class="btn btn-gold btn-sm" onclick="exportNotesCSV()">📥 Export CSV</button>
+        </div>
+        <div class="form-group mb-12">
+          <input type="text" class="form-input" id="noteSearch" placeholder="🔍 Search notes..." oninput="renderNotes()">
+        </div>
+        <div id="noteList" class="grid-auto"></div>
+      </section>
+
+      <!-- ===== ACTIVITY LOG ===== -->
+      <section id="sec-activity" style="display:none;">
+        <div class="section-title">📋 Activity Log</div>
+        <div class="export-bar">
+          <button class="btn btn-gold btn-sm" onclick="exportActivityCSV()">📥 Export CSV</button>
+          <button class="btn btn-danger btn-sm" onclick="clearActivityLog()">🗑 Clear Log</button>
+        </div>
+        <div class="card">
+          <div id="activityLog" style="max-height:600px;overflow-y:auto;"></div>
+        </div>
+      </section>
+
+      <!-- ===== REPORTS ===== -->
+      <section id="sec-reports" style="display:none;">
+        <div class="section-title">📈 Progress Reports</div>
+        <div class="export-bar">
+          <button class="btn btn-gold btn-sm" onclick="exportAllData()">📥 Export All Data</button>
+          <button class="btn btn-ghost btn-sm" onclick="exportJSON()">💾 Export JSON Backup</button>
+        </div>
+
+        <div class="grid-3">
+          <div class="stat-card" style="--accent-color:var(--gold)">
+            <div class="stat-icon">🔥</div>
+            <div class="stat-value" id="rptStreak">0</div>
+            <div class="stat-label">Current Streak (days)</div>
+          </div>
+          <div class="stat-card" style="--accent-color:var(--turquoise)">
+            <div class="stat-icon">⏱️</div>
+            <div class="stat-value" id="rptStudyTime">0h</div>
+            <div class="stat-label">Total Study Time</div>
+          </div>
+          <div class="stat-card" style="--accent-color:var(--green-ok)">
+            <div class="stat-icon">✅</div>
+            <div class="stat-value" id="rptHabitsTotal">0</div>
+            <div class="stat-label">Habits Completed Total</div>
+          </div>
+        </div>
+
+        <div class="card mt-20">
+          <div class="card-title">📚 Subject-wise Progress</div>
+          <div id="rptSubjects"></div>
+        </div>
+
+        <div class="card mt-20">
+          <div class="card-title">📅 Weekly Summary (last 7 days)</div>
+          <div id="rptWeekly"></div>
+        </div>
+      </section>
+
+      <!-- ===== SETTINGS ===== -->
+      <section id="sec-settings" style="display:none;">
+        <div class="section-title">⚙️ Settings</div>
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title">👤 Profile</div>
+            <div class="form-group">
+              <label class="form-label">Display Name</label>
+              <input type="text" class="form-input" id="settingsName">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Spiritual Name (optional)</label>
+              <input type="text" class="form-input" id="settingsSpName" placeholder="e.g. Hari Das">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Semester</label>
+              <input type="text" class="form-input" id="settingsSem">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Exam Date</label>
+              <input type="date" class="form-input" id="settingsExamDate">
+            </div>
+            <button class="btn btn-primary" onclick="saveSettings()">Save Profile</button>
+          </div>
+          <div class="card">
+            <div class="card-title">🔐 Change Password</div>
+            <div class="form-group">
+              <label class="form-label">Current Password</label>
+              <input type="password" class="form-input" id="currPass">
+            </div>
+            <div class="form-group">
+              <label class="form-label">New Password</label>
+              <input type="password" class="form-input" id="newPass">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Confirm New Password</label>
+              <input type="password" class="form-input" id="confPass">
+            </div>
+            <button class="btn btn-primary" onclick="changePassword()">Update Password</button>
+          </div>
+          <div class="card">
+            <div class="card-title">🗄️ Data Management</div>
+            <p class="text-muted mb-12" style="font-size:.85rem;">All data is stored locally in your browser.</p>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <button class="btn btn-gold" onclick="exportJSON()">📥 Download Full Backup</button>
+              <label class="btn btn-ghost" style="cursor:pointer;">
+                📤 Import Backup <input type="file" accept=".json" style="display:none" onchange="importJSON(event)">
+              </label>
+              <button class="btn btn-danger" onclick="confirmClearAll()">⚠️ Clear All Data</button>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">🔔 Notifications</div>
+            <p class="text-muted mb-12" style="font-size:.85rem;">Enable browser notifications for reminders.</p>
+            <button class="btn btn-primary" onclick="requestNotifPerm()">Enable Notifications</button>
+            <div class="mt-12" style="font-size:.82rem;color:var(--text-muted);" id="notifStatus"></div>
+          </div>
+        </div>
+      </section>
+
+    </div><!-- content-area -->
+  </div><!-- main-content -->
+</div><!-- appPage -->
+
+<!-- ===== MODALS ===== -->
+
+<!-- Add Habit Modal -->
+<div class="modal-overlay" id="habitModal">
+  <div class="modal">
+    <div class="modal-title">➕ Add New Habit</div>
+    <div class="form-group">
+      <label class="form-label">Habit Name</label>
+      <input type="text" class="form-input" id="hName" placeholder="e.g. Chant 16 rounds">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Category</label>
+      <select class="form-select" id="hCategory">
+        <option value="spiritual">🙏 Spiritual</option>
+        <option value="study">📚 Study</option>
+        <option value="health">💪 Health</option>
+        <option value="discipline">⚡ Discipline</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Target Time (optional)</label>
+      <input type="time" class="form-input" id="hTime">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('habitModal')">Cancel</button>
+      <button class="btn btn-primary btn-sm" onclick="addHabit()">Add Habit</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Routine Slot Modal -->
+<div class="modal-overlay" id="slotModal">
+  <div class="modal">
+    <div class="modal-title">⏰ Add Time Slot</div>
+    <div class="form-group">
+      <label class="form-label">Start Time</label>
+      <input type="time" class="form-input" id="slotStart">
+    </div>
+    <div class="form-group">
+      <label class="form-label">End Time</label>
+      <input type="time" class="form-input" id="slotEnd">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Activity Name</label>
+      <input type="text" class="form-input" id="slotName" placeholder="e.g. Bhagavatam Reading">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Description (optional)</label>
+      <input type="text" class="form-input" id="slotDesc" placeholder="Details...">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Color Tag</label>
+      <select class="form-select" id="slotColor">
+        <option value="var(--gold)">🟡 Gold (Spiritual)</option>
+        <option value="var(--turquoise)">🔵 Blue (Study)</option>
+        <option value="var(--green-ok)">🟢 Green (Health)</option>
+        <option value="var(--saffron)">🟠 Saffron (Discipline)</option>
+        <option value="var(--lotus)">🌸 Lotus (Rest)</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('slotModal')">Cancel</button>
+      <button class="btn btn-primary btn-sm" onclick="addSlot()">Add Slot</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Event Modal -->
+<div class="modal-overlay" id="eventModal">
+  <div class="modal">
+    <div class="modal-title">📅 Add Event</div>
+    <div class="form-group">
+      <label class="form-label">Title</label>
+      <input type="text" class="form-input" id="evTitle" placeholder="e.g. Statistics Exam">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Date</label>
+      <input type="date" class="form-input" id="evDate">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Time (optional)</label>
+      <input type="time" class="form-input" id="evTime">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Type</label>
+      <select class="form-select" id="evType">
+        <option value="exam">📝 Exam</option>
+        <option value="study">📚 Study Session</option>
+        <option value="spiritual">🙏 Spiritual Event</option>
+        <option value="reminder">🔔 Reminder</option>
+        <option value="other">📌 Other</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('eventModal')">Cancel</button>
+      <button class="btn btn-primary btn-sm" onclick="addEvent()">Add Event</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Note Modal -->
+<div class="modal-overlay" id="noteModal">
+  <div class="modal">
+    <div class="modal-title">📝 New Note</div>
+    <div class="form-group">
+      <label class="form-label">Title</label>
+      <input type="text" class="form-input" id="noteTitle" placeholder="Note title...">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Content</label>
+      <textarea class="form-textarea" id="noteContent" placeholder="Write your note..." style="min-height:120px;"></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Category</label>
+      <select class="form-select" id="noteCategory">
+        <option value="spiritual">🙏 Spiritual</option>
+        <option value="study">📚 Study</option>
+        <option value="reminder">🔔 Reminder</option>
+        <option value="general">📌 General</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('noteModal')">Cancel</button>
+      <button class="btn btn-primary btn-sm" onclick="addNote()">Save Note</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Topic Modal -->
+<div class="modal-overlay" id="topicModal">
+  <div class="modal">
+    <div class="modal-title">📚 Add Topic/Chapter</div>
+    <div class="form-group">
+      <label class="form-label">Subject</label>
+      <select class="form-select" id="topicSubject">
+        <option value="Statistical Methods">Statistical Methods</option>
+        <option value="Linear Algebra">Linear Algebra</option>
+        <option value="DSA">DSA</option>
+        <option value="EC">EC (Electronics)</option>
+        <option value="Economy">Economy</option>
+        <option value="Business Communication">Business Communication</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Topic / Chapter Name</label>
+      <input type="text" class="form-input" id="topicName" placeholder="e.g. Probability Distributions">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Status</label>
+      <select class="form-select" id="topicStatus">
+        <option value="pending">⏳ Not Started</option>
+        <option value="partial">📖 In Progress</option>
+        <option value="done">✅ Completed</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('topicModal')">Cancel</button>
+      <button class="btn btn-primary btn-sm" onclick="addTopic()">Add Topic</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// DATA STORE — All persistence via localStorage
+// ============================================================
+const DB_KEY = 'discipletrack_db';
+let DB = {};
+
+function loadDB() {
+  try {
+    const raw = localStorage.getItem(DB_KEY);
+    DB = raw ? JSON.parse(raw) : {};
+  } catch(e) { DB = {}; }
+  // Defaults
+  if (!DB.users) DB.users = [{ username:'admin', password:'12345', name:'Admin', semester:'B.Tech 1st Year, 2nd Semester', examDate:'', spName:'' }];
+  if (!DB.habits) DB.habits = getDefaultHabits();
+  if (!DB.habitHistory) DB.habitHistory = {};
+  if (!DB.routine) DB.routine = getDefaultRoutine();
+  if (!DB.subjects) DB.subjects = getDefaultSubjects();
+  if (!DB.events) DB.events = getDefaultEvents();
+  if (!DB.notes) DB.notes = [];
+  if (!DB.activity) DB.activity = [];
+  if (!DB.timerSessions) DB.timerSessions = [];
+  if (!DB.settings) DB.settings = { examDate:'' };
+  saveDB();
+}
+
+function saveDB() {
+  localStorage.setItem(DB_KEY, JSON.stringify(DB));
+}
+
+function getDefaultHabits() {
+  return [
+    { id:genId(), name:'Wake up at 4:00 AM (Brahma Muhurta)', category:'spiritual', time:'04:00' },
+    { id:genId(), name:'Chant 16 rounds of Japa', category:'spiritual', time:'04:30' },
+    { id:genId(), name:'Mangala Arati / Morning Prayers', category:'spiritual', time:'04:15' },
+    { id:genId(), name:'Read Bhagavad Gita (1 chapter)', category:'spiritual', time:'06:00' },
+    { id:genId(), name:'Read Srimad Bhagavatam', category:'spiritual', time:'06:30' },
+    { id:genId(), name:'No meat, fish or eggs (vegetarian)', category:'spiritual', time:'' },
+    { id:genId(), name:'No intoxication (no tea/coffee)', category:'spiritual', time:'' },
+    { id:genId(), name:'No gambling or idle speculation', category:'discipline', time:'' },
+    { id:genId(), name:'Study Statistical Methods (1 hour)', category:'study', time:'09:00' },
+    { id:genId(), name:'Study Linear Algebra (1 hour)', category:'study', time:'10:00' },
+    { id:genId(), name:'Study DSA (1 hour)', category:'study', time:'14:00' },
+    { id:genId(), name:'Revise EC Notes (45 min)', category:'study', time:'15:00' },
+    { id:genId(), name:'Yoga / Exercise (30 min)', category:'health', time:'07:00' },
+    { id:genId(), name:'Tulsi Puja / Offering', category:'spiritual', time:'07:30' },
+    { id:genId(), name:'Sleep by 10:00 PM', category:'health', time:'22:00' },
+    { id:genId(), name:'No phone after 9 PM', category:'discipline', time:'21:00' },
+    { id:genId(), name:'Write in gratitude journal', category:'discipline', time:'21:30' },
+  ];
+}
+
+function getDefaultRoutine() {
+  return [
+    { id:genId(), start:'04:00', end:'04:15', name:'Wake Up & Freshen Up', desc:'Brahma Muhurta — most auspicious time', color:'var(--gold)' },
+    { id:genId(), start:'04:15', end:'05:00', name:'Mangala Arati & Japa', desc:'Chant Hare Krishna Maha Mantra', color:'var(--gold)' },
+    { id:genId(), start:'05:00', end:'06:30', name:'16 Rounds of Japa', desc:'Complete daily japa rounds', color:'var(--gold)' },
+    { id:genId(), start:'06:30', end:'07:00', name:'Bhagavad Gita Reading', desc:'Daily chapter study with purports', color:'var(--gold)' },
+    { id:genId(), start:'07:00', end:'07:30', name:'Yoga & Exercise', desc:'Surya Namaskar + body strengthening', color:'var(--green-ok)' },
+    { id:genId(), start:'07:30', end:'08:30', name:'Prasadam (Breakfast)', desc:'Eat only Krishna prasad', color:'var(--lotus)' },
+    { id:genId(), start:'08:30', end:'09:00', name:'College Preparation', desc:'Get ready, commute', color:'var(--saffron)' },
+    { id:genId(), start:'09:00', end:'13:00', name:'College / Classes', desc:'Attend lectures with full attention', color:'var(--turquoise)' },
+    { id:genId(), start:'13:00', end:'13:30', name:'Lunch Prasadam', desc:'Eat mindfully', color:'var(--lotus)' },
+    { id:genId(), start:'13:30', end:'15:30', name:'Statistical Methods Study', desc:'Practice problems + notes', color:'var(--turquoise)' },
+    { id:genId(), start:'15:30', end:'17:00', name:'Linear Algebra Study', desc:'Matrix operations, eigenvalues', color:'var(--turquoise)' },
+    { id:genId(), start:'17:00', end:'17:30', name:'Evening Arati + Break', desc:'Sandhya Arati prayers', color:'var(--gold)' },
+    { id:genId(), start:'17:30', end:'19:00', name:'DSA Practice', desc:'LeetCode / textbook problems', color:'var(--turquoise)' },
+    { id:genId(), start:'19:00', end:'20:00', name:'EC + Economy Study', desc:'Electronics circuits + economic theory', color:'var(--turquoise)' },
+    { id:genId(), start:'20:00', end:'20:30', name:'Dinner Prasadam', desc:'Light sattvic meal', color:'var(--lotus)' },
+    { id:genId(), start:'20:30', end:'21:00', name:'Business Communication', desc:'Writing, reading comprehension', color:'var(--turquoise)' },
+    { id:genId(), start:'21:00', end:'21:30', name:'Srimad Bhagavatam Reading', desc:'Night class spiritual study', color:'var(--gold)' },
+    { id:genId(), start:'21:30', end:'22:00', name:'Journal + Plan Tomorrow', desc:'Write reflections + next-day plan', color:'var(--saffron)' },
+    { id:genId(), start:'22:00', end:'04:00', name:'Rest / Sleep', desc:'Full sleep for mind recovery', color:'var(--lotus)' },
+  ];
+}
+
+function getDefaultSubjects() {
+  return [
+    {
+      id: genId(), name: 'Statistical Methods', code: 'STAT-201',
+      color: 'var(--saffron)',
+      topics: [
+        { id:genId(), name:'Descriptive Statistics (Mean, Median, Mode)', status:'pending' },
+        { id:genId(), name:'Probability Theory & Bayes Theorem', status:'pending' },
+        { id:genId(), name:'Probability Distributions (Binomial, Poisson)', status:'pending' },
+        { id:genId(), name:'Normal Distribution & Z-scores', status:'pending' },
+        { id:genId(), name:'Sampling Theory & Estimation', status:'pending' },
+        { id:genId(), name:'Hypothesis Testing (t-test, chi-square)', status:'pending' },
+        { id:genId(), name:'Correlation & Regression Analysis', status:'pending' },
+        { id:genId(), name:'ANOVA - Analysis of Variance', status:'pending' },
+      ]
+    },
+    {
+      id: genId(), name: 'Linear Algebra', code: 'MATH-202',
+      color: 'var(--turquoise)',
+      topics: [
+        { id:genId(), name:'Matrices & Matrix Operations', status:'pending' },
+        { id:genId(), name:'Determinants & Properties', status:'pending' },
+        { id:genId(), name:'Inverse of a Matrix', status:'pending' },
+        { id:genId(), name:'Systems of Linear Equations (Gaussian)', status:'pending' },
+        { id:genId(), name:'Vector Spaces & Subspaces', status:'pending' },
+        { id:genId(), name:'Linear Independence & Basis', status:'pending' },
+        { id:genId(), name:'Eigenvalues & Eigenvectors', status:'pending' },
+        { id:genId(), name:'Diagonalization & Jordan Form', status:'pending' },
+        { id:genId(), name:'Inner Product Spaces', status:'pending' },
+      ]
+    },
+    {
+      id: genId(), name: 'DSA', code: 'CS-203',
+      color: 'var(--green-ok)',
+      topics: [
+        { id:genId(), name:'Arrays & Strings', status:'pending' },
+        { id:genId(), name:'Linked Lists (Singly, Doubly, Circular)', status:'pending' },
+        { id:genId(), name:'Stacks & Queues', status:'pending' },
+        { id:genId(), name:'Trees (Binary, BST, AVL)', status:'pending' },
+        { id:genId(), name:'Graphs (BFS, DFS, Dijkstra)', status:'pending' },
+        { id:genId(), name:'Hashing & Hash Tables', status:'pending' },
+        { id:genId(), name:'Sorting Algorithms', status:'pending' },
+        { id:genId(), name:'Dynamic Programming', status:'pending' },
+        { id:genId(), name:'Divide & Conquer', status:'pending' },
+        { id:genId(), name:'Greedy Algorithms', status:'pending' },
+      ]
+    },
+    {
+      id: genId(), name: 'EC (Electronics)', code: 'EC-204',
+      color: 'var(--gold)',
+      topics: [
+        { id:genId(), name:'Basic Circuit Laws (Ohm, KVL, KCL)', status:'pending' },
+        { id:genId(), name:'Network Theorems (Thevenin, Norton)', status:'pending' },
+        { id:genId(), name:'Semiconductor Diodes & Characteristics', status:'pending' },
+        { id:genId(), name:'BJT Transistor Configurations', status:'pending' },
+        { id:genId(), name:'FET & MOSFET', status:'pending' },
+        { id:genId(), name:'Operational Amplifiers (Op-Amp)', status:'pending' },
+        { id:genId(), name:'Digital Logic Gates', status:'pending' },
+        { id:genId(), name:'Combinational Circuits', status:'pending' },
+      ]
+    },
+    {
+      id: genId(), name: 'Economy', code: 'ECO-205',
+      color: 'var(--lotus)',
+      topics: [
+        { id:genId(), name:'Micro vs Macro Economics', status:'pending' },
+        { id:genId(), name:'Demand & Supply Analysis', status:'pending' },
+        { id:genId(), name:'Market Structures', status:'pending' },
+        { id:genId(), name:'National Income & GDP', status:'pending' },
+        { id:genId(), name:'Money, Banking & Monetary Policy', status:'pending' },
+        { id:genId(), name:'Inflation & Unemployment', status:'pending' },
+        { id:genId(), name:'International Trade & Balance of Payments', status:'pending' },
+        { id:genId(), name:'Indian Economy Overview', status:'pending' },
+      ]
+    },
+    {
+      id: genId(), name: 'Business Communication', code: 'BC-206',
+      color: 'var(--saffron-light)',
+      topics: [
+        { id:genId(), name:'Communication Process & Types', status:'pending' },
+        { id:genId(), name:'Written Communication (Letters, Emails)', status:'pending' },
+        { id:genId(), name:'Report Writing', status:'pending' },
+        { id:genId(), name:'Oral Communication & Presentations', status:'pending' },
+        { id:genId(), name:'Non-verbal Communication', status:'pending' },
+        { id:genId(), name:'Meetings & Group Discussion', status:'pending' },
+        { id:genId(), name:'Technical Writing Skills', status:'pending' },
+      ]
+    },
+  ];
+}
+
+function getDefaultEvents() {
+  const today = new Date();
+  const fmt = d => d.toISOString().split('T')[0];
+  const add = (d,n) => { const r = new Date(d); r.setDate(r.getDate()+n); return r; };
+  return [
+    { id:genId(), title:'Statistical Methods Exam', date: fmt(add(today,30)), time:'10:00', type:'exam' },
+    { id:genId(), title:'Linear Algebra Exam', date: fmt(add(today,32)), time:'14:00', type:'exam' },
+    { id:genId(), title:'DSA Exam', date: fmt(add(today,34)), time:'10:00', type:'exam' },
+    { id:genId(), title:'EC Exam', date: fmt(add(today,36)), time:'14:00', type:'exam' },
+    { id:genId(), title:'Economy Exam', date: fmt(add(today,38)), time:'10:00', type:'exam' },
+    { id:genId(), title:'Business Communication Exam', date: fmt(add(today,40)), time:'14:00', type:'exam' },
+    { id:genId(), title:'Prabhupad Appearance Day', date: fmt(add(today,7)), time:'05:00', type:'spiritual' },
+  ];
+}
+
+// ============================================================
+// UTILITIES
+// ============================================================
+let currentUser = null;
+let currentSection = 'dashboard';
+
+function genId() { return Math.random().toString(36).substr(2,9); }
+
+function today() { return new Date().toISOString().split('T')[0]; }
+
+function fmt12(t) {
+  if (!t) return '';
+  let [h,m] = t.split(':').map(Number);
+  const ap = h >= 12 ? 'PM' : 'AM';
+  h = h % 12 || 12;
+  return `${h}:${m.toString().padStart(2,'0')} ${ap}`;
+}
+
+function showToast(msg, type='info') {
+  const c = document.getElementById('toastContainer');
+  const icons = { success:'✅', error:'❌', info:'ℹ️', warning:'⚠️' };
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.innerHTML = `<span>${icons[type]||'ℹ️'}</span><span>${msg}</span>`;
+  c.appendChild(t);
+  setTimeout(() => t.remove(), 3500);
+}
+
+function logActivity(msg) {
+  if (!DB.activity) DB.activity = [];
+  DB.activity.unshift({ time: new Date().toLocaleTimeString(), date: today(), msg });
+  if (DB.activity.length > 200) DB.activity.pop();
+  saveDB();
+}
+
+const QUOTES = [
+  '"Let a man lift himself by his own self alone; let him not lower himself, for this self alone is the friend of oneself." — BG 6.5',
+  '"One who restrains the senses and organs of action, but whose mind dwells on sense objects, certainly deludes himself." — BG 3.6',
+  '"A person who is not disturbed in mind even amidst three kinds of miseries or elated when there is happiness, and who is free from attachment, fear and anger, is called a sage of steady mind." — BG 2.56',
+  '"Engage your mind always in thinking of Me, become My devotee, offer obeisances to Me, and worship Me. Being completely absorbed in Me, surely you will come to Me." — BG 9.34',
+  '"Knowledge is better than practice; meditation is better than knowledge; and abandonment of the fruits of actions is better than meditation." — BG 12.12',
+  '"Hare Krishna Hare Krishna, Krishna Krishna Hare Hare, Hare Rama Hare Rama, Rama Rama Hare Hare" 🙏',
+  '"The pleasure which arises from the contact of the senses with their objects — that pleasure is like nectar at first, but poison at the end." — BG 18.38',
+  '"Whatever you do, whatever you eat, whatever you offer in sacrifice, whatever you give away, and whatever austerities you perform — do that as an offering to Me." — BG 9.27',
+];
+
+// ============================================================
+// AUTH SYSTEM
+// ============================================================
+function switchAuthTab(tab) {
+  document.getElementById('loginForm').style.display = tab === 'login' ? 'block' : 'none';
+  document.getElementById('registerForm').style.display = tab === 'register' ? 'block' : 'none';
+  document.getElementById('loginTabBtn').classList.toggle('active', tab === 'login');
+  document.getElementById('registerTabBtn').classList.toggle('active', tab === 'register');
+}
+
+function doLogin() {
+  const u = document.getElementById('loginUsername').value.trim();
+  const p = document.getElementById('loginPassword').value;
+  const user = DB.users.find(x => x.username === u && x.password === p);
+  if (!user) { showToast('Invalid credentials 🙏', 'error'); return; }
+  currentUser = user;
+  localStorage.setItem('dt_session', u);
+  initApp();
+}
+
+function doRegister() {
+  const name = document.getElementById('regName').value.trim();
+  const u = document.getElementById('regUsername').value.trim();
+  const p = document.getElementById('regPassword').value;
+  const sem = document.getElementById('regSemester').value;
+  if (!name || !u || !p) { showToast('Please fill all fields', 'error'); return; }
+  if (DB.users.find(x => x.username === u)) { showToast('Username already exists', 'error'); return; }
+  const newUser = { username:u, password:p, name, semester:sem, examDate:'', spName:'' };
+  DB.users.push(newUser);
+  saveDB();
+  currentUser = newUser;
+  localStorage.setItem('dt_session', u);
+  logActivity(`New account created: ${name}`);
+  initApp();
+}
+
+function doLogout() {
+  currentUser = null;
+  localStorage.removeItem('dt_session');
+  document.getElementById('appPage').classList.remove('active');
+  document.getElementById('loginPage').classList.add('active');
+  showToast('Hare Krishna! See you soon 🙏', 'info');
+  stopTimer();
+}
+
+function checkSession() {
+  const s = localStorage.getItem('dt_session');
+  if (s) {
+    const user = DB.users.find(x => x.username === s);
+    if (user) { currentUser = user; return true; }
+  }
+  return false;
+}
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+function showSection(sec) {
+  currentSection = sec;
+  const titles = {
+    dashboard:'Dashboard', habits:'Daily Sadhana & Habits', routine:'Daily Routine',
+    subjects:'B.Tech Subjects', calendar:'Calendar & Events',
+    timer:'Pomodoro Timer', notes:'Notes & Reminders',
+    activity:'Activity Log', reports:'Progress Reports', settings:'Settings'
+  };
+  document.getElementById('currentPageTitle').textContent = titles[sec] || sec;
+
+  document.querySelectorAll('[id^="sec-"]').forEach(el => el.style.display = 'none');
+  const el = document.getElementById('sec-' + sec);
+  if (el) { el.style.display = 'block'; }
+
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(el => {
+    if (el.getAttribute('onclick') === `showSection('${sec}')`) el.classList.add('active');
+  });
+
+  closeSidebar();
+  renderSection(sec);
+}
+
+function renderSection(sec) {
+  switch(sec) {
+    case 'dashboard': renderDashboard(); break;
+    case 'habits': renderHabits(); break;
+    case 'routine': renderRoutine(); break;
+    case 'subjects': renderSubjects(); break;
+    case 'calendar': renderCalendar(); break;
+    case 'timer': renderTimerLog(); break;
+    case 'notes': renderNotes(); break;
+    case 'activity': renderActivityLog(); break;
+    case 'reports': renderReports(); break;
+    case 'settings': renderSettings(); break;
+  }
+}
+
+// ============================================================
+// DASHBOARD
+// ============================================================
+function renderDashboard() {
+  const q = QUOTES[Math.floor(Math.random() * QUOTES.length)];
+  document.getElementById('quoteBar').innerHTML = `<em>"${q.split('—')[0].trim()} </em><strong>— ${q.split('—')[1] || 'Bhagavad Gita'}</strong>`;
+
+  // Streak
+  const streak = calcStreak();
+  document.getElementById('statStreak').textContent = streak;
+  document.getElementById('rptStreak') && (document.getElementById('rptStreak').textContent = streak);
+
+  // Habits today
+  const todayHabits = getTodayHabits();
+  const pct = todayHabits.total ? Math.round((todayHabits.done/todayHabits.total)*100) : 0;
+  document.getElementById('statHabits').textContent = pct + '%';
+
+  // Study time today
+  const studyMins = getTodayStudyMins();
+  document.getElementById('statStudy').textContent = studyMins >= 60 ? Math.floor(studyMins/60)+'h '+(studyMins%60)+'m' : studyMins+'m';
+
+  // Days to exam
+  const u = currentUser;
+  let examDate = u.examDate || DB.settings.examDate || '';
+  let daysToExam = '?';
+  if (!examDate) {
+    // Use first exam from calendar
+    const exams = DB.events.filter(e => e.type === 'exam').sort((a,b) => a.date.localeCompare(b.date));
+    if (exams.length) {
+      const diff = Math.ceil((new Date(exams[0].date) - new Date()) / 86400000);
+      daysToExam = diff > 0 ? diff : '!';
+    }
+  } else {
+    const diff = Math.ceil((new Date(examDate) - new Date()) / 86400000);
+    daysToExam = diff > 0 ? diff : '!';
+  }
+  document.getElementById('statExams').textContent = daysToExam;
+
+  // Dash habits (spiritual only, first 5)
+  const spiritual = DB.habits.filter(h => h.category === 'spiritual').slice(0,5);
+  const dh = document.getElementById('dashHabits');
+  const td = today();
+  dh.innerHTML = spiritual.map(h => {
+    const done = DB.habitHistory[td] && DB.habitHistory[td][h.id];
+    return `<div class="habit-item ${done?'completed':''}" onclick="toggleHabit('${h.id}',true)">
+      <div class="habit-check">${done?'✓':''}</div>
+      <div class="habit-name" style="font-size:.85rem;">${h.name}</div>
+    </div>`;
+  }).join('');
+
+  // Dash subjects
+  const ds = document.getElementById('dashSubjects');
+  ds.innerHTML = DB.subjects.map(s => {
+    const done = s.topics.filter(t => t.status === 'done').length;
+    const total = s.topics.length;
+    const pct = total ? Math.round((done/total)*100) : 0;
+    return `<div style="margin-bottom:10px;">
+      <div style="display:flex;justify-content:space-between;font-size:.82rem;margin-bottom:4px;">
+        <span style="font-weight:600;">${s.name}</span>
+        <span style="color:var(--gold);">${pct}%</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${s.color||'var(--saffron)'};"></div></div>
+    </div>`;
+  }).join('');
+
+  // Dash schedule (next 4 slots)
+  const now = new Date();
+  const hm = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
+  const upcoming = DB.routine
+    .filter(r => r.start >= hm)
+    .sort((a,b) => a.start.localeCompare(b.start))
+    .slice(0,4);
+  const dsch = document.getElementById('dashSchedule');
+  dsch.innerHTML = upcoming.length ? upcoming.map(r => `
+    <div class="time-slot">
+      <div class="time-label">${fmt12(r.start)}</div>
+      <div class="slot-content" style="--accent-col:${r.color}">
+        <div class="slot-name">${r.name}</div>
+        ${r.desc ? `<div class="slot-desc">${r.desc}</div>` : ''}
+      </div>
+    </div>`).join('') : `<p style="color:var(--text-muted);font-size:.85rem;text-align:center;padding:20px 0;">✨ Schedule complete for today! Hare Krishna!</p>`;
+
+  // Recent activity (last 6)
+  const da = document.getElementById('dashActivity');
+  const recent = (DB.activity || []).slice(0,8);
+  da.innerHTML = recent.length ? recent.map(l => `
+    <div class="log-item">
+      <div class="log-dot"></div>
+      <div>
+        <div class="log-time">${l.date} ${l.time}</div>
+        <div class="log-text">${l.msg}</div>
+      </div>
+    </div>`).join('') : '<p class="text-muted" style="font-size:.85rem;">No activity yet.</p>';
+}
+
+function getTodayHabits() {
+  const td = today();
+  const history = DB.habitHistory[td] || {};
+  const done = DB.habits.filter(h => history[h.id]).length;
+  return { done, total: DB.habits.length };
+}
+
+function getTodayStudyMins() {
+  const td = today();
+  return (DB.timerSessions || [])
+    .filter(s => s.date === td && s.phase === 'focus')
+    .reduce((sum, s) => sum + (s.minutes || 0), 0);
+}
+
+function calcStreak() {
+  let streak = 0;
+  const d = new Date();
+  for (let i = 0; i < 365; i++) {
+    const key = d.toISOString().split('T')[0];
+    const h = DB.habitHistory[key];
+    if (!h) { d.setDate(d.getDate()-1); if(i>0) break; continue; }
+    const done = DB.habits.filter(habit => h[habit.id]).length;
+    if (done >= Math.ceil(DB.habits.length * 0.5)) { streak++; d.setDate(d.getDate()-1); }
+    else break;
+  }
+  return streak;
+}
+
+// ============================================================
+// HABITS
+// ============================================================
+function renderHabits() {
+  const cats = ['spiritual','study','health','discipline'];
+  const td = today();
+  const history = DB.habitHistory[td] || {};
+  cats.forEach(cat => {
+    const el = document.getElementById('habitList' + cat.charAt(0).toUpperCase() + cat.slice(1));
+    if (!el) return;
+    const items = DB.habits.filter(h => h.category === cat);
+    el.innerHTML = items.length ? items.map(h => {
+      const done = !!history[h.id];
+      return `<div class="habit-item ${done?'completed':''}" onclick="toggleHabit('${h.id}')">
+        <div class="habit-check">${done?'✓':''}</div>
+        <div class="habit-name">${h.name}</div>
+        ${h.time ? `<span style="font-size:.72rem;color:var(--text-muted);font-family:var(--font-mono);">${fmt12(h.time)}</span>` : ''}
+        <button onclick="event.stopPropagation();deleteHabit('${h.id}')" style="background:none;border:none;color:var(--red-warn);cursor:pointer;opacity:.5;font-size:.8rem;">✕</button>
+      </div>`;
+    }).join('') : `<p class="text-muted" style="font-size:.82rem;text-align:center;padding:12px;">No habits in this category.</p>`;
+  });
+
+  renderHabitHeatmap();
+  updateHabitStats();
+}
+
+function toggleHabit(id, quick) {
+  const td = today();
+  if (!DB.habitHistory[td]) DB.habitHistory[td] = {};
+  const was = !!DB.habitHistory[td][id];
+  DB.habitHistory[td][id] = !was;
+  saveDB();
+  const habit = DB.habits.find(h => h.id === id);
+  logActivity(!was ? `✅ Completed: ${habit?.name}` : `↩️ Unchecked: ${habit?.name}`);
+  if (currentSection === 'habits' && !quick) renderHabits();
+  renderDashboard();
+}
+
+function deleteHabit(id) {
+  DB.habits = DB.habits.filter(h => h.id !== id);
+  saveDB();
+  renderHabits();
+  showToast('Habit removed', 'info');
+}
+
+function openAddHabitModal() { document.getElementById('habitModal').classList.add('open'); }
+
+function addHabit() {
+  const name = document.getElementById('hName').value.trim();
+  if (!name) { showToast('Enter habit name', 'error'); return; }
+  const habit = {
+    id: genId(),
+    name,
+    category: document.getElementById('hCategory').value,
+    time: document.getElementById('hTime').value,
+  };
+  DB.habits.push(habit);
+  saveDB();
+  logActivity(`➕ Added habit: ${name}`);
+  closeModal('habitModal');
+  renderHabits();
+  showToast('Habit added! Hare Krishna 🙏', 'success');
+}
+
+function renderHabitHeatmap() {
+  const el = document.getElementById('habitHeatmap');
+  if (!el) return;
+  const total = DB.habits.length || 1;
+  const days = [];
+  for (let i = 29; i >= 0; i--) {
+    const d = new Date(); d.setDate(d.getDate() - i);
+    days.push(d.toISOString().split('T')[0]);
+  }
+  el.innerHTML = days.map(d => {
+    const h = DB.habitHistory[d] || {};
+    const done = DB.habits.filter(habit => h[habit.id]).length;
+    const pct = done / total;
+    let bg = 'var(--navy-card2)';
+    if (pct > 0.75) bg = 'var(--green-ok)';
+    else if (pct > 0.5) bg = 'var(--gold)';
+    else if (pct > 0.25) bg = 'var(--saffron)';
+    else if (pct > 0) bg = 'rgba(255,107,26,0.3)';
+    return `<div title="${d}: ${done}/${total} habits" style="width:20px;height:20px;border-radius:4px;background:${bg};cursor:pointer;"></div>`;
+  }).join('');
+}
+
+function updateHabitStats() {
+  const td = today();
+  const h = DB.habitHistory[td] || {};
+  const done = DB.habits.filter(habit => h[habit.id]).length;
+  const pct = DB.habits.length ? Math.round((done/DB.habits.length)*100) : 0;
+  document.getElementById('statHabits').textContent = pct + '%';
+}
+
+// ============================================================
+// ROUTINE
+// ============================================================
+function renderRoutine() {
+  const periods = {
+    Morning: r => r.start >= '04:00' && r.start < '12:00',
+    Afternoon: r => r.start >= '12:00' && r.start < '17:00',
+    Evening: r => r.start >= '17:00' && r.start < '21:00',
+    Night: r => r.start >= '21:00' || r.start < '04:00',
+  };
+  Object.entries(periods).forEach(([period, fn]) => {
+    const el = document.getElementById('routine' + period);
+    if (!el) return;
+    const slots = DB.routine.filter(fn).sort((a,b) => a.start.localeCompare(b.start));
+    el.innerHTML = slots.map(r => `
+      <div class="time-slot">
+        <div class="time-label">${fmt12(r.start)}–${fmt12(r.end)}</div>
+        <div class="slot-content" style="--accent-col:${r.color}">
+          <div class="slot-name">${r.name}
+            <button onclick="deleteSlot('${r.id}')" style="float:right;background:none;border:none;color:var(--red-warn);cursor:pointer;font-size:.8rem;opacity:.5;">✕</button>
+          </div>
+          ${r.desc ? `<div class="slot-desc">${r.desc}</div>` : ''}
+        </div>
+      </div>`).join('') || '<p class="text-muted" style="font-size:.82rem;text-align:center;padding:12px;">Nothing scheduled.</p>';
+  });
+}
+
+function openAddSlotModal() { document.getElementById('slotModal').classList.add('open'); }
+
+function addSlot() {
+  const start = document.getElementById('slotStart').value;
+  const end = document.getElementById('slotEnd').value;
+  const name = document.getElementById('slotName').value.trim();
+  if (!start || !name) { showToast('Fill start time and name', 'error'); return; }
+  const slot = { id:genId(), start, end, name, desc:document.getElementById('slotDesc').value, color:document.getElementById('slotColor').value };
+  DB.routine.push(slot);
+  saveDB();
+  logActivity(`📅 Added schedule slot: ${name}`);
+  closeModal('slotModal');
+  renderRoutine();
+  showToast('Time slot added!', 'success');
+}
+
+function deleteSlot(id) {
+  DB.routine = DB.routine.filter(r => r.id !== id);
+  saveDB();
+  renderRoutine();
+}
+
+// ============================================================
+// SUBJECTS
+// ============================================================
+function renderSubjects() {
+  const el = document.getElementById('subjectList');
+  el.innerHTML = DB.subjects.map(s => {
+    const done = s.topics.filter(t => t.status === 'done').length;
+    const partial = s.topics.filter(t => t.status === 'partial').length;
+    const total = s.topics.length;
+    const pct = total ? Math.round(((done + partial*0.5)/total)*100) : 0;
+    return `<div class="subject-card" onclick="toggleSubject('${s.id}')">
+      <div class="subject-header">
+        <div>
+          <div class="subject-name" style="color:${s.color}">${s.name}</div>
+          <div class="subject-code">${s.code} • ${done}/${total} topics done</div>
+        </div>
+        <div style="text-align:right;">
+          <div class="subject-pct">${pct}%</div>
+          <div style="font-size:.7rem;color:var(--text-muted);">▼ Expand</div>
+        </div>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${s.color};"></div></div>
+      <div class="chapter-list" id="chapters-${s.id}">
+        ${s.topics.map(t => `
+          <div class="chapter-item">
+            <div class="chapter-status ${t.status}" onclick="event.stopPropagation();cycleTopicStatus('${s.id}','${t.id}')">
+              ${t.status==='done'?'✓':t.status==='partial'?'½':''}
+            </div>
+            <span style="${t.status==='done'?'text-decoration:line-through;opacity:.6;':''}">${t.name}</span>
+            <button onclick="event.stopPropagation();deleteTopic('${s.id}','${t.id}')" style="margin-left:auto;background:none;border:none;color:var(--red-warn);cursor:pointer;font-size:.78rem;opacity:.4;">✕</button>
+          </div>`).join('')}
+        <button class="btn btn-ghost btn-sm" style="margin-top:10px;" onclick="event.stopPropagation();openAddTopicModalFor('${s.id}')">+ Add Topic</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleSubject(id) {
+  const el = document.getElementById('chapters-' + id);
+  if (el) el.classList.toggle('open');
+}
+
+function cycleTopicStatus(subId, topId) {
+  const sub = DB.subjects.find(s => s.id === subId);
+  const top = sub?.topics.find(t => t.id === topId);
+  if (!top) return;
+  const cycle = { pending:'partial', partial:'done', done:'pending' };
+  const was = top.status;
+  top.status = cycle[top.status] || 'pending';
+  saveDB();
+  logActivity(`📖 ${sub.name}: "${top.name}" → ${top.status}`);
+  renderSubjects();
+}
+
+function deleteTopic(subId, topId) {
+  const sub = DB.subjects.find(s => s.id === subId);
+  if (sub) sub.topics = sub.topics.filter(t => t.id !== topId);
+  saveDB();
+  renderSubjects();
+}
+
+function openAddTopicModal() { document.getElementById('topicModal').classList.add('open'); }
+function openAddTopicModalFor(subId) {
+  document.getElementById('topicSubject').value = DB.subjects.find(s=>s.id===subId)?.name || '';
+  openAddTopicModal();
+}
+
+function addTopic() {
+  const subName = document.getElementById('topicSubject').value;
+  const name = document.getElementById('topicName').value.trim();
+  const status = document.getElementById('topicStatus').value;
+  if (!name) { showToast('Enter topic name', 'error'); return; }
+  const sub = DB.subjects.find(s => s.name === subName);
+  if (sub) {
+    sub.topics.push({ id:genId(), name, status });
+    saveDB();
+    logActivity(`➕ Added topic to ${subName}: ${name}`);
+  }
+  closeModal('topicModal');
+  renderSubjects();
+  showToast('Topic added!', 'success');
+}
+
+// ============================================================
+// CALENDAR
+// ============================================================
+let calDate = new Date();
+let selectedCalDate = null;
+
+function renderCalendar() {
+  const y = calDate.getFullYear(), m = calDate.getMonth();
+  const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('calMonthYear').textContent = `${monthNames[m]} ${y}`;
+
+  const first = new Date(y, m, 1).getDay();
+  const days = new Date(y, m+1, 0).getDate();
+  const todayStr = today();
+
+  let html = '';
+  // Prev month fill
+  const prevDays = new Date(y, m, 0).getDate();
+  for (let i = first - 1; i >= 0; i--) {
+    html += `<div class="cal-day other-month"><div class="cal-day-num">${prevDays - i}</div></div>`;
+  }
+  for (let d = 1; d <= days; d++) {
+    const dateStr = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const isToday = dateStr === todayStr;
+    const isSel = dateStr === selectedCalDate;
+    const hasEv = DB.events.some(e => e.date === dateStr);
+    html += `<div class="cal-day ${isToday?'today':''} ${isSel?'selected':''} ${hasEv?'has-event':''}" onclick="selectCalDay('${dateStr}')">
+      <div class="cal-day-num">${d}</div>
+    </div>`;
+  }
+  document.getElementById('calDays').innerHTML = html;
+  renderCalEvents();
+}
+
+function selectCalDay(dateStr) {
+  selectedCalDate = dateStr;
+  renderCalendar();
+}
+
+function changeMonth(dir) {
+  calDate.setMonth(calDate.getMonth() + dir);
+  renderCalendar();
+}
+
+function renderCalEvents() {
+  const el = document.getElementById('calEventList');
+  const titleEl = document.getElementById('calEventTitle');
+  let events = DB.events;
+  if (selectedCalDate) {
+    events = events.filter(e => e.date === selectedCalDate);
+    titleEl.textContent = `📌 Events on ${selectedCalDate}`;
+  } else {
+    events = events.sort((a,b) => a.date.localeCompare(b.date)).slice(0,10);
+    titleEl.textContent = '📌 Upcoming Events';
+  }
+  const colors = { exam:'var(--red-warn)', study:'var(--turquoise)', spiritual:'var(--gold)', reminder:'var(--saffron)', other:'var(--text-muted)' };
+  el.innerHTML = events.length ? events.map(e => `
+    <div class="event-item" style="--event-color:${colors[e.type]||'var(--saffron)'}">
+      <div style="flex:1;">
+        <div class="event-title">${e.title}</div>
+        <div class="event-time">${e.date} ${e.time ? '• '+fmt12(e.time) : ''} <span class="badge badge-saffron" style="margin-left:6px;">${e.type}</span></div>
+      </div>
+      <button onclick="deleteEvent('${e.id}')" style="background:none;border:none;color:var(--red-warn);cursor:pointer;font-size:.85rem;opacity:.6;">✕</button>
+    </div>`).join('') : `<p class="text-muted" style="font-size:.82rem;text-align:center;padding:16px;">No events ${selectedCalDate?'on this day':'upcoming'}.</p>`;
+}
+
+function openAddEventModal() {
+  if (selectedCalDate) document.getElementById('evDate').value = selectedCalDate;
+  document.getElementById('eventModal').classList.add('open');
+}
+
+function addEvent() {
+  const title = document.getElementById('evTitle').value.trim();
+  const date = document.getElementById('evDate').value;
+  if (!title || !date) { showToast('Fill event title and date', 'error'); return; }
+  const ev = { id:genId(), title, date, time:document.getElementById('evTime').value, type:document.getElementById('evType').value };
+  DB.events.push(ev);
+  saveDB();
+  logActivity(`📅 Added event: ${title} on ${date}`);
+  closeModal('eventModal');
+  renderCalendar();
+  showToast('Event added!', 'success');
+}
+
+function deleteEvent(id) {
+  DB.events = DB.events.filter(e => e.id !== id);
+  saveDB();
+  renderCalEvents();
+}
+
+// ============================================================
+// POMODORO TIMER
+// ============================================================
+let timerInterval = null;
+let timerRunning = false;
+let timerSecondsLeft = 25 * 60;
+let timerPhase = 'focus'; // 'focus', 'short', 'long'
+let pomCount = 0;
+let FOCUS_DUR = 25, SHORT_BREAK = 5, LONG_BREAK = 15;
+const CIRCUMFERENCE = 2 * Math.PI * 88; // r=88
+
+function applyTimerSettings() {
+  FOCUS_DUR = parseInt(document.getElementById('focusDuration').value) || 25;
+  SHORT_BREAK = parseInt(document.getElementById('shortBreak').value) || 5;
+  LONG_BREAK = parseInt(document.getElementById('longBreak').value) || 15;
+  if (!timerRunning) {
+    timerSecondsLeft = FOCUS_DUR * 60;
+    timerPhase = 'focus';
+    updateTimerUI();
+  }
+}
+
+function timerToggle() {
+  if (timerRunning) {
+    clearInterval(timerInterval);
+    timerRunning = false;
+    document.getElementById('timerStartBtn').textContent = '▶';
+    document.getElementById('timerStartBtn').classList.remove('active');
+  } else {
+    timerRunning = true;
+    document.getElementById('timerStartBtn').textContent = '⏸';
+    document.getElementById('timerStartBtn').classList.add('active');
+    timerInterval = setInterval(timerTick, 1000);
+  }
+}
+
+function timerTick() {
+  timerSecondsLeft--;
+  if (timerSecondsLeft <= 0) {
+    clearInterval(timerInterval);
+    timerRunning = false;
+    // Log session
+    const sub = document.getElementById('timerSubject')?.value || 'General';
+    const mins = timerPhase === 'focus' ? FOCUS_DUR : timerPhase === 'short' ? SHORT_BREAK : LONG_BREAK;
+    DB.timerSessions.push({ date:today(), time:new Date().toLocaleTimeString(), phase:timerPhase, minutes:mins, subject:sub });
+    saveDB();
+    logActivity(`⏱️ ${timerPhase==='focus'?'Focus':'Break'} session done: ${sub} (${mins} min)`);
+
+    if (timerPhase === 'focus') {
+      pomCount++;
+      showToast(`🎉 Focus session done! Take a break 🙏`, 'success');
+      timerPhase = pomCount % 4 === 0 ? 'long' : 'short';
+      timerSecondsLeft = (pomCount % 4 === 0 ? LONG_BREAK : SHORT_BREAK) * 60;
+    } else {
+      showToast(`💪 Break over! Back to studying`, 'info');
+      timerPhase = 'focus';
+      timerSecondsLeft = FOCUS_DUR * 60;
+    }
+    document.getElementById('timerStartBtn').textContent = '▶';
+    document.getElementById('timerStartBtn').classList.remove('active');
+    renderTimerLog();
+    if ('Notification' in window && Notification.permission === 'granted') {
+      new Notification('DiscipleTrack', { body: timerPhase === 'focus' ? 'Focus time! Hare Krishna!' : 'Break time! Rest, chant.', icon: '' });
+    }
+  }
+  updateTimerUI();
+}
+
+function updateTimerUI() {
+  const m = Math.floor(timerSecondsLeft/60), s = timerSecondsLeft%60;
+  document.getElementById('timerText').textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  const phases = { focus:'FOCUS 🧠', short:'SHORT BREAK ☕', long:'LONG BREAK 🌿' };
+  document.getElementById('timerPhase').textContent = phases[timerPhase] || 'FOCUS';
+  const total = (timerPhase==='focus' ? FOCUS_DUR : timerPhase==='short' ? SHORT_BREAK : LONG_BREAK) * 60;
+  const offset = CIRCUMFERENCE * (1 - timerSecondsLeft/total);
+  const ring = document.getElementById('timerRing');
+  if (ring) ring.style.strokeDashoffset = offset;
+  // Pom dots
+  const dots = document.getElementById('pomCount');
+  if (dots) {
+    dots.innerHTML = Array(4).fill(0).map((_,i) => `<div class="pom-dot ${i<(pomCount%4)?'done':''}"></div>`).join('');
+  }
+  document.title = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')} — ${phases[timerPhase]?.split(' ')[0]} | DiscipleTrack`;
+}
+
+function timerReset() {
+  clearInterval(timerInterval);
+  timerRunning = false;
+  timerPhase = 'focus';
+  timerSecondsLeft = FOCUS_DUR * 60;
+  pomCount = 0;
+  document.getElementById('timerStartBtn').textContent = '▶';
+  document.getElementById('timerStartBtn').classList.remove('active');
+  updateTimerUI();
+}
+
+function timerSkip() {
+  clearInterval(timerInterval);
+  timerRunning = false;
+  timerSecondsLeft = 0;
+  timerTick();
+}
+
+function stopTimer() {
+  clearInterval(timerInterval);
+  timerRunning = false;
+}
+
+function renderTimerLog() {
+  const el = document.getElementById('timerLog');
+  if (!el) return;
+  const sessions = (DB.timerSessions || []).filter(s => s.date === today()).reverse();
+  el.innerHTML = sessions.length ? sessions.map(s => `
+    <div class="log-item">
+      <div class="log-dot" style="background:${s.phase==='focus'?'var(--saffron)':'var(--green-ok)'}"></div>
+      <div>
+        <div class="log-time">${s.time}</div>
+        <div class="log-text">${s.phase==='focus'?'📖':'☕'} ${s.subject} — ${s.minutes} min ${s.phase}</div>
+      </div>
+    </div>`).join('') : '<p class="text-muted" style="font-size:.82rem;text-align:center;padding:12px;">No sessions today. Start studying!</p>';
+}
+
+// ============================================================
+// NOTES
+// ============================================================
+function renderNotes() {
+  const search = (document.getElementById('noteSearch')?.value || '').toLowerCase();
+  const notes = (DB.notes || []).filter(n =>
+    n.title.toLowerCase().includes(search) || n.body.toLowerCase().includes(search)
+  );
+  const colors = { spiritual:'var(--gold)', study:'var(--turquoise)', reminder:'var(--saffron)', general:'var(--text-muted)' };
+  const el = document.getElementById('noteList');
+  el.innerHTML = notes.length ? notes.map(n => `
+    <div class="note-card" style="--note-color:${colors[n.category]||'var(--saffron)'}">
+      <button class="note-del" onclick="deleteNote('${n.id}')">✕ Delete</button>
+      <div class="note-title">${n.title}</div>
+      <div class="note-body">${n.body}</div>
+      <div class="note-date">${n.date} • <span class="badge badge-saffron">${n.category}</span></div>
+    </div>`).join('') : '<p class="text-muted" style="text-align:center;padding:30px;">No notes yet. Add one! 📝</p>';
+}
+
+function openAddNoteModal() { document.getElementById('noteModal').classList.add('open'); }
+
+function addNote() {
+  const title = document.getElementById('noteTitle').value.trim();
+  const body = document.getElementById('noteContent').value.trim();
+  if (!title) { showToast('Enter note title', 'error'); return; }
+  DB.notes.unshift({ id:genId(), title, body, category:document.getElementById('noteCategory').value, date:today() });
+  saveDB();
+  logActivity(`📝 Note added: ${title}`);
+  closeModal('noteModal');
+  renderNotes();
+  showToast('Note saved!', 'success');
+}
+
+function deleteNote(id) {
+  DB.notes = DB.notes.filter(n => n.id !== id);
+  saveDB();
+  renderNotes();
+}
+
+// ============================================================
+// ACTIVITY LOG
+// ============================================================
+function renderActivityLog() {
+  const el = document.getElementById('activityLog');
+  const logs = DB.activity || [];
+  el.innerHTML = logs.length ? logs.map(l => `
+    <div class="log-item">
+      <div class="log-dot"></div>
+      <div>
+        <div class="log-time">${l.date} • ${l.time}</div>
+        <div class="log-text">${l.msg}</div>
+      </div>
+    </div>`).join('') : '<p class="text-muted" style="text-align:center;padding:30px;">No activity logged yet.</p>';
+}
+
+function clearActivityLog() {
+  if (confirm('Clear all activity logs?')) {
+    DB.activity = [];
+    saveDB();
+    renderActivityLog();
+    showToast('Log cleared', 'info');
+  }
+}
+
+// ============================================================
+// REPORTS
+// ============================================================
+function renderReports() {
+  document.getElementById('rptStreak').textContent = calcStreak();
+
+  const totalMins = (DB.timerSessions||[]).filter(s=>s.phase==='focus').reduce((a,b)=>a+(b.minutes||0),0);
+  document.getElementById('rptStudyTime').textContent = Math.floor(totalMins/60) + 'h';
+
+  const totalHabits = Object.values(DB.habitHistory||{}).reduce((acc, day) => {
+    return acc + DB.habits.filter(h => day[h.id]).length;
+  }, 0);
+  document.getElementById('rptHabitsTotal').textContent = totalHabits;
+
+  // Subjects
+  const el = document.getElementById('rptSubjects');
+  el.innerHTML = DB.subjects.map(s => {
+    const done = s.topics.filter(t => t.status==='done').length;
+    const partial = s.topics.filter(t => t.status==='partial').length;
+    const total = s.topics.length;
+    const pct = total ? Math.round(((done+partial*0.5)/total)*100) : 0;
+    return `<div style="margin-bottom:14px;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+        <span style="font-weight:700;color:${s.color}">${s.name}</span>
+        <span style="color:var(--gold);font-weight:700;">${pct}% (${done}/${total} done)</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${s.color};"></div></div>
+    </div>`;
+  }).join('');
+
+  // Weekly
+  const weekly = document.getElementById('rptWeekly');
+  let whtml = '<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:8px;">';
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(); d.setDate(d.getDate()-i);
+    const ds = d.toISOString().split('T')[0];
+    const h = DB.habitHistory[ds] || {};
+    const done = DB.habits.filter(habit => h[habit.id]).length;
+    const total = DB.habits.length || 1;
+    const pct = Math.round((done/total)*100);
+    const mins = (DB.timerSessions||[]).filter(s=>s.date===ds&&s.phase==='focus').reduce((a,b)=>a+(b.minutes||0),0);
+    whtml += `<div style="text-align:center;background:var(--navy);border-radius:8px;padding:10px 6px;">
+      <div style="font-size:.7rem;color:var(--text-muted);">${['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d.getDay()]}</div>
+      <div style="font-size:.72rem;color:var(--text-muted);">${String(d.getDate()).padStart(2,'0')}</div>
+      <div style="font-size:1.1rem;margin:4px 0;">${pct>75?'🟢':pct>50?'🟡':pct>25?'🟠':'⚪'}</div>
+      <div style="font-size:.7rem;color:var(--gold);">${pct}%</div>
+      <div style="font-size:.68rem;color:var(--turquoise);">${mins}m</div>
+    </div>`;
+  }
+  whtml += '</div>';
+  weekly.innerHTML = whtml;
+}
+
+// ============================================================
+// SETTINGS
+// ============================================================
+function renderSettings() {
+  if (!currentUser) return;
+  document.getElementById('settingsName').value = currentUser.name || '';
+  document.getElementById('settingsSpName').value = currentUser.spName || '';
+  document.getElementById('settingsSem').value = currentUser.semester || '';
+  document.getElementById('settingsExamDate').value = currentUser.examDate || '';
+  const status = document.getElementById('notifStatus');
+  if ('Notification' in window) {
+    status.textContent = `Notification permission: ${Notification.permission}`;
+  } else {
+    status.textContent = 'Notifications not supported in this browser.';
+  }
+}
+
+function saveSettings() {
+  if (!currentUser) return;
+  currentUser.name = document.getElementById('settingsName').value.trim();
+  currentUser.spName = document.getElementById('settingsSpName').value.trim();
+  currentUser.semester = document.getElementById('settingsSem').value.trim();
+  currentUser.examDate = document.getElementById('settingsExamDate').value;
+  const idx = DB.users.findIndex(u => u.username === currentUser.username);
+  if (idx >= 0) DB.users[idx] = currentUser;
+  saveDB();
+  updateSidebarUser();
+  logActivity('⚙️ Profile settings updated');
+  showToast('Settings saved! Hare Krishna 🙏', 'success');
+}
+
+function changePassword() {
+  const curr = document.getElementById('currPass').value;
+  const newP = document.getElementById('newPass').value;
+  const conf = document.getElementById('confPass').value;
+  if (curr !== currentUser.password) { showToast('Current password incorrect', 'error'); return; }
+  if (newP !== conf) { showToast('Passwords do not match', 'error'); return; }
+  if (newP.length < 4) { showToast('Password too short', 'error'); return; }
+  currentUser.password = newP;
+  const idx = DB.users.findIndex(u => u.username === currentUser.username);
+  if (idx >= 0) DB.users[idx] = currentUser;
+  saveDB();
+  showToast('Password updated!', 'success');
+}
+
+function requestNotifPerm() {
+  if ('Notification' in window) {
+    Notification.requestPermission().then(p => {
+      document.getElementById('notifStatus').textContent = `Permission: ${p}`;
+      showToast(`Notifications ${p}`, p === 'granted' ? 'success' : 'info');
+    });
+  }
+}
+
+function confirmClearAll() {
+  if (confirm('⚠️ Clear ALL data? This cannot be undone!')) {
+    if (confirm('Are you ABSOLUTELY sure? All habits, notes, schedule will be lost.')) {
+      localStorage.removeItem(DB_KEY);
+      location.reload();
+    }
+  }
+}
+
+// ============================================================
+// EXPORT / IMPORT
+// ============================================================
+function exportCSV(headers, rows, filename) {
+  const csv = [headers.join(','), ...rows.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(','))].join('\n');
+  const blob = new Blob([csv], {type:'text/csv'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = filename; a.click();
+}
+
+function exportHabitsCSV() {
+  const headers = ['Habit', 'Category', 'Time', 'Today Status'];
+  const td = today(); const h = DB.habitHistory[td] || {};
+  const rows = DB.habits.map(habit => [habit.name, habit.category, habit.time, h[habit.id] ? 'Done' : 'Pending']);
+  exportCSV(headers, rows, `habits_${td}.csv`);
+  showToast('Habits exported!', 'success');
+}
+
+function exportRoutineCSV() {
+  const headers = ['Start', 'End', 'Activity', 'Description'];
+  const rows = DB.routine.sort((a,b)=>a.start.localeCompare(b.start)).map(r => [r.start, r.end, r.name, r.desc]);
+  exportCSV(headers, rows, `routine_${today()}.csv`);
+  showToast('Routine exported!', 'success');
+}
+
+function exportSubjectsCSV() {
+  const headers = ['Subject', 'Code', 'Topic', 'Status'];
+  const rows = [];
+  DB.subjects.forEach(s => s.topics.forEach(t => rows.push([s.name, s.code, t.name, t.status])));
+  exportCSV(headers, rows, `subjects_${today()}.csv`);
+  showToast('Subjects exported!', 'success');
+}
+
+function exportNotesCSV() {
+  const headers = ['Title', 'Body', 'Category', 'Date'];
+  const rows = DB.notes.map(n => [n.title, n.body, n.category, n.date]);
+  exportCSV(headers, rows, `notes_${today()}.csv`);
+  showToast('Notes exported!', 'success');
+}
+
+function exportActivityCSV() {
+  const headers = ['Date', 'Time', 'Activity'];
+  const rows = DB.activity.map(l => [l.date, l.time, l.msg]);
+  exportCSV(headers, rows, `activity_${today()}.csv`);
+  showToast('Activity exported!', 'success');
+}
+
+function exportAllData() {
+  const headers = ['Type', 'Date', 'Details'];
+  const rows = [];
+  DB.activity.forEach(l => rows.push(['Activity', l.date, l.msg]));
+  DB.timerSessions.forEach(s => rows.push(['Timer', s.date, `${s.subject} - ${s.minutes}min ${s.phase}`]));
+  DB.subjects.forEach(s => s.topics.forEach(t => rows.push(['Subject', '', `${s.name}: ${t.name} (${t.status})`])));
+  exportCSV(headers, rows, `full_report_${today()}.csv`);
+  showToast('Full report exported!', 'success');
+}
+
+function exportJSON() {
+  const blob = new Blob([JSON.stringify(DB, null, 2)], {type:'application/json'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = `discipletrack_backup_${today()}.json`; a.click();
+  showToast('Backup downloaded!', 'success');
+}
+
+function importJSON(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const r = new FileReader();
+  r.onload = ev => {
+    try {
+      const data = JSON.parse(ev.target.result);
+      if (data.habits && data.subjects) {
+        Object.assign(DB, data);
+        saveDB();
+        showToast('Backup imported! Refreshing...', 'success');
+        setTimeout(() => location.reload(), 1500);
+      } else { showToast('Invalid backup file', 'error'); }
+    } catch { showToast('Could not parse JSON file', 'error'); }
+  };
+  r.readAsText(file);
+}
+
+// ============================================================
+// MODALS
+// ============================================================
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+// Close modals on overlay click
+document.querySelectorAll('.modal-overlay').forEach(el => {
+  el.addEventListener('click', function(e) { if (e.target === this) this.classList.remove('open'); });
+});
+
+// ============================================================
+// SIDEBAR
+// ============================================================
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('open');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('open');
+}
+
+// ============================================================
+// CLOCK
+// ============================================================
+function startClock() {
+  function tick() {
+    const now = new Date();
+    const time = now.toLocaleTimeString('en-IN', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    const date = now.toLocaleDateString('en-IN', {weekday:'short',day:'numeric',month:'short'});
+    document.getElementById('liveClock').textContent = time;
+    document.getElementById('dateBadge').textContent = date;
+    if (timerRunning) updateTimerUI();
+  }
+  tick();
+  setInterval(tick, 1000);
+}
+
+// ============================================================
+// STARS
+// ============================================================
+function createStars() {
+  const c = document.getElementById('starsContainer');
+  for (let i = 0; i < 60; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    const size = Math.random() * 2.5 + 0.5;
+    s.style.cssText = `
+      width:${size}px;height:${size}px;
+      left:${Math.random()*100}%;top:${Math.random()*100}%;
+      --dur:${Math.random()*4+2}s;animation-delay:${Math.random()*4}s;
+    `;
+    c.appendChild(s);
+  }
+}
+
+// ============================================================
+// INIT
+// ============================================================
+function updateSidebarUser() {
+  if (!currentUser) return;
+  const name = currentUser.spName || currentUser.name;
+  document.getElementById('userNameSidebar').textContent = name;
+  document.getElementById('userRoleSidebar').textContent = currentUser.semester || 'B.Tech';
+  document.getElementById('userAvatarSidebar').textContent = name.charAt(0).toUpperCase();
+}
+
+function initApp() {
+  document.getElementById('loginPage').classList.remove('active');
+  document.getElementById('appPage').classList.add('active');
+  updateSidebarUser();
+  showSection('dashboard');
+  startClock();
+  updateTimerUI();
+  logActivity(`🙏 Logged in: ${currentUser.name} — Hare Krishna!`);
+  showToast(`Hare Krishna, ${currentUser.spName || currentUser.name}! 🙏`, 'success');
+}
+
+// ============================================================
+// BOOTSTRAP
+// ============================================================
+loadDB();
+createStars();
+startClock();
+
+if (checkSession()) {
+  initApp();
+} else {
+  document.getElementById('loginPage').classList.add('active');
+}
+</script>
+</body>
+</html>
